@@ -37,10 +37,16 @@ export const apiClient = async (endpoint: string, options: RequestInit = {}) => 
     throw new Error(errorMsg);
   }
 
-  // Si la respuesta es vacía (ej. 204 No Content), regresamos null en lugar de romper el JSON.parse
-  if (response.status === 204 || response.headers.get('content-length') === '0') {
+  // Si la respuesta es vacía, regresamos null en lugar de romper el JSON.parse
+  const text = await response.text();
+  if (!text) {
     return null;
   }
-
-  return response.json();
+  
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    // Si no es JSON válido (ej. un string plain text), lo regresamos tal cual
+    return text;
+  }
 };

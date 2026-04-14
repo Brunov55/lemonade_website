@@ -16,6 +16,9 @@ export const ALL: APIRoute = async ({ request, params }) => {
   headersToForward.delete('origin');
   headersToForward.delete('referer');
 
+  console.log(`[Proxy] Forwarding to: ${targetUrl.toString()}`);
+  console.log(`[Proxy] Passing cookie: ${headersToForward.get('cookie')}`);
+
   try {
     // Definimos el cuerpo solo si NO es GET o HEAD (fetch lanza error si ponemos body en GET)
     const hasBody = request.method !== 'GET' && request.method !== 'HEAD';
@@ -33,15 +36,37 @@ export const ALL: APIRoute = async ({ request, params }) => {
     const responseHeaders = new Headers(response.headers);
     responseHeaders.delete('content-encoding');
 
+    // MÁGIA DEL PROXY: Convertir la cookie cross-domain en una cookie First-Party
+    const setCookieString = responseHeaders.get('set-cookie');
+    if (setCookieString) {
+      // Eliminar SameSite=None y Secure para que funcione perfecto como first-party, incluso en http (localhost)
+      const sanitizedCookie = setCookieString
+        .replace(/;\s*SameSite=None/gi, '; SameSite=Lax')
+        .replace(/;\s*Secure/gi, '');
+      responseHeaders.set('set-cookie', sanitizedCookie);
+    }
+
     return new Response(response.body, {
       status: response.status,
       statusText: response.statusText,
       headers: responseHeaders
     });
   } catch (error: any) {
-    return new Response(JSON.stringify({ message: "Error del Proxy Astro", details: error.message }), {
-      status: 502,
-      headers: { "Content-Type": "application/json" }
-    });
+    console.error("Proxy fetch error:", error);
+    if (error.cause) {
+      console.error("Proxy fetch error cause:", error.cause);
+    }
+    return new Response(
+      JSON.stringify({
+        message: "Error del Proxy Astro",
+        details: error.message,
+        cause: error.cause ? error.cause.message || String(error.cause) : undefined,
+        target: targetUrl.toString()
+      }),
+      {
+        status: 502,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 };

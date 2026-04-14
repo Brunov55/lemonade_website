@@ -24,7 +24,11 @@ export const onRequest = defineMiddleware(async ({ url, request, redirect }, nex
 
   try {
     // Hacemos GET a Spring Boot para validar el JWT
-    const response = await fetch(`${import.meta.env.API_URL}/auth/me`, {
+    const meUrl = `${import.meta.env.API_URL}/auth/me`;
+    console.log(`[Middleware] Validating auth going to: ${meUrl}`);
+    console.log(`[Middleware] Passing cookie header: ${cookieHeader}`);
+    
+    const response = await fetch(meUrl, {
       headers: {
         'cookie': cookieHeader // Inyectamos la cookie tal cual vino del navegador del cliente
       }
@@ -32,13 +36,15 @@ export const onRequest = defineMiddleware(async ({ url, request, redirect }, nex
     
     // Si el backend dice 401 Unauthorized, regresamos al login (/)
     if (!response.ok) {
+      console.log(`[Middleware] Validate returned ${response.status}. Redirecting to /`);
       return redirect('/');
     }
+    console.log(`[Middleware] Validate returned ${response.status}. Welcome!`);
     
     // Si dice 200 OK, lo dejamos pasar
-  } catch (e) {
+  } catch (e: any) {
     // Manejo de backend caído (Timeout)
-    console.error("Error validando sesión con Spring Boot:", e);
+    console.error("Error validando sesión con Spring Boot:", e.message || e);
     // Podrías mostrar una pantalla de error 500, pero por seguridad y flujo, rebotar a login (/)
     return redirect('/');
   }
