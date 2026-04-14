@@ -40,11 +40,12 @@
     --color-theme-border: var(--color-pop-sky);
     --color-theme-text: var(--color-pop-cream);
     --color-theme-muted: #94A3B8;
-    
-    --color-primary: var(--color-pop-amber);
+
+    --color-primary: var(--color-pop-amber-dark);
     --color-secondary: var(--color-pop-sky);
-    --color-accent: var(--color-pop-magenta);
-    --color-success: #34D399; /* emerald-400 para dark mode */
+    --color-accent: var(--color-pop-magenta-dark);
+    --color-success: #34D399;
+    /* emerald-400 para dark mode */
   }
 
   body {
@@ -53,17 +54,23 @@
     @apply font-body antialiased selection:bg-accent selection:text-white transition-colors duration-300;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-display tracking-tight font-bold;
   }
 }
 
 @layer utilities {
+
   /* Neo-Brutalist shadow helper */
   .neo-shadow {
     box-shadow: 4px 4px 0px 0px var(--color-theme-border);
   }
-  
+
   .neo-shadow-active {
     box-shadow: 2px 2px 0px 0px var(--color-theme-border);
     transform: translate(2px, 2px);
