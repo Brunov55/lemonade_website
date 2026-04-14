@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@import "tailwindcss";
+
+@theme {
+  /* Pop-Art & Neo-Brutalism Palette */
+  --color-pop-sky: #4CB5F5;
+  --color-pop-sky-dark: #3aa1dd;
+  --color-pop-amber: #F59E0B;
+  --color-pop-amber-dark: #d97706;
+  --color-pop-magenta: #E11D48;
+  --color-pop-magenta-dark: #be123c;
+  --color-pop-navy: #0F172A;
+  --color-pop-cream: #FAFAF9;
+  --color-pop-white: #FFFFFF;
+
+  --color-primary: var(--color-pop-amber);
+  --color-secondary: var(--color-pop-navy);
+  --color-accent: var(--color-pop-magenta);
+
+  /* Semantic Theme Variables */
+  --color-theme-bg: var(--color-pop-sky);
+  --color-theme-surface: var(--color-pop-white);
+  --color-theme-border: var(--color-pop-navy);
+  --color-theme-text: var(--color-pop-navy);
+  --color-theme-muted: #334155;
+
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Manrope", sans-serif;
+}
+
+@layer base {
+  .dark {
+    /* Dark Mode: Deep Navy Background, Neon Accents */
+    --color-theme-bg: var(--color-pop-navy);
+    --color-theme-surface: #1E293B;
+    --color-theme-border: var(--color-pop-sky);
+    --color-theme-text: var(--color-pop-cream);
+    --color-theme-muted: #94A3B8;
+    
+    --color-primary: var(--color-pop-amber);
+    --color-secondary: var(--color-pop-sky);
+    --color-accent: var(--color-pop-magenta);
+  }
+
+  body {
+    background-color: var(--color-theme-bg);
+    color: var(--color-theme-text);
+    @apply font-body antialiased selection:bg-accent selection:text-white transition-colors duration-300;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight font-bold;
+  }
+}
+
+@layer utilities {
+  /* Neo-Brutalist shadow helper */
+  .neo-shadow {
+    box-shadow: 4px 4px 0px 0px var(--color-theme-border);
+  }
+  
+  .neo-shadow-active {
+    box-shadow: 2px 2px 0px 0px var(--color-theme-border);
+    transform: translate(2px, 2px);
+  }
+
+  .neo-border {
+    border: 3px solid var(--color-theme-border);
+  }
+
+  .nav-bg {
+    background-color: var(--color-theme-surface);
+    @apply neo-border neo-shadow;
+  }
+}

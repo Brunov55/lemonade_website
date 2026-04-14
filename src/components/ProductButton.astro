@@ -1,0 +1,26 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+	title: string;
+	subtitle: string;
+	price: number;
+	imageSrc: any;
+}
+
+const { title, subtitle, price, imageSrc } = Astro.props;
+---
+<button class="btn-venta bg-theme-surface p-3 neo-border neo-shadow flex flex-col items-center gap-3 active:neo-shadow-active transition-all w-full group"
+  data-product={`${title} ${subtitle}`}
+  data-price={price}
+>
+	<!-- Contenedor cuadrado para las imágenes -->
+	<div class="w-full aspect-square bg-primary border-[3px] border-theme-border flex items-center justify-center overflow-hidden">
+		<Image src={imageSrc} alt={`${title} ${subtitle}`} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none" />
+	</div>
+	<div class="text-center pb-1 w-full pointer-events-none">
+		<p class="font-display font-bold leading-tight text-base text-theme-text uppercase tracking-tight">{title}</p>
+		<p class="text-theme-muted font-bold text-xs mb-1 uppercase">{subtitle}</p>
+		<p class="font-bold text-accent text-xl">${price}</p>
+	</div>
+</button>
