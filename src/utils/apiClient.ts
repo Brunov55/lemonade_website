@@ -22,7 +22,7 @@ export const apiClient = async (endpoint: string, options: RequestInit = {}) => 
 
   // Si recibimos 401, la sesión expiró o la cookie es inválida
   if (response.status === 401) {
-    window.location.href = '/login';
+    window.location.href = '/';
     return null;
   }
 

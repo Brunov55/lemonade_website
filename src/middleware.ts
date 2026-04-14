@@ -3,22 +3,23 @@ import { defineMiddleware } from 'astro:middleware';
 // REGLA #2: El Guardián de Rutas (Middleware SSR)
 export const onRequest = defineMiddleware(async ({ url, request, redirect }, next) => {
   // Ignorar assets estáticos, llamadas API internas y rutas públicas
-  const isStatic = url.pathname.startsWith('/_') || url.pathname.includes('.') || url.pathname === '/login';
+  const isStatic = url.pathname.startsWith('/_') || url.pathname.includes('.') || url.pathname === '/';
   if (isStatic) {
-    // Redirigir al inicio si un usuario autenticado intenta entrar al /login
-    if (url.pathname === '/login') {
-      // Para evitar el bucle infinito (ERR_TOO_MANY_REDIRECTS),
-      // no confiamos ciegamente en que la cookie sea válida aquí.
-      // Así el usuario siempre podrá ver el formulario y hacer un reemplazo de sesión.
+    // Redirigir al dashboard si un usuario ya autenticado entra a /
+    if (url.pathname === '/') {
+      const cookieHeader = request.headers.get('cookie');
+      if (cookieHeader) {
+        return redirect('/dashboard');
+      }
       return next();
     }
     return next();
   }
 
-  // Cualquier otra ruta del sistema (/, /insumos, /analitica, etc) se considera protegida
+  // Cualquier otra ruta del sistema (/dashboard, /insumos, /analitica, etc) se considera protegida
   const cookieHeader = request.headers.get('cookie');
   if (!cookieHeader) {
-    return redirect('/login');
+    return redirect('/');
   }
 
   try {
@@ -29,17 +30,17 @@ export const onRequest = defineMiddleware(async ({ url, request, redirect }, nex
       }
     });
     
-    // Si el backend dice 401 Unauthorized, regresamos al login
+    // Si el backend dice 401 Unauthorized, regresamos al login (/)
     if (!response.ok) {
-      return redirect('/login');
+      return redirect('/');
     }
     
     // Si dice 200 OK, lo dejamos pasar
   } catch (e) {
     // Manejo de backend caído (Timeout)
     console.error("Error validando sesión con Spring Boot:", e);
-    // Podrías mostrar una pantalla de error 500, pero por seguridad y flujo, rebotar a login
-    return redirect('/login');
+    // Podrías mostrar una pantalla de error 500, pero por seguridad y flujo, rebotar a login (/)
+    return redirect('/');
   }
   
   return next();
