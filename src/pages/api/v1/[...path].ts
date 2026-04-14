@@ -38,8 +38,8 @@ export const ALL: APIRoute = async ({ request, params }) => {
       statusText: response.statusText,
       headers: responseHeaders
     });
-  } catch (error) {
-    return new Response(JSON.stringify({ message: "Error del Proxy Astro" }), {
+  } catch (error: any) {
+    return new Response(JSON.stringify({ message: "Error del Proxy Astro", details: error.message }), {
       status: 502,
       headers: { "Content-Type": "application/json" }
     });

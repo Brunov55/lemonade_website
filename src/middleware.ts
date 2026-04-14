@@ -3,7 +3,7 @@ import { defineMiddleware } from 'astro:middleware';
 // REGLA #2: El Guardián de Rutas (Middleware SSR)
 export const onRequest = defineMiddleware(async ({ url, request, redirect }, next) => {
   // Ignorar assets estáticos, llamadas API internas y rutas públicas
-  const isStatic = url.pathname.startsWith('/_') || url.pathname.includes('.') || url.pathname === '/';
+  const isStatic = url.pathname.startsWith('/_') || url.pathname.startsWith('/api') || url.pathname.includes('.') || url.pathname === '/';
   if (isStatic) {
     // Redirigir al dashboard si un usuario ya autenticado entra a /
     if (url.pathname === '/') {
