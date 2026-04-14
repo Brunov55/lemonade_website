@@ -14,9 +14,12 @@
   --color-pop-cream: #FAFAF9;
   --color-pop-white: #FFFFFF;
 
+  --color-pop-lime: #10B981;
+
   --color-primary: var(--color-pop-amber);
   --color-secondary: var(--color-pop-navy);
   --color-accent: var(--color-pop-magenta);
+  --color-success: var(--color-pop-lime);
 
   /* Semantic Theme Variables */
   --color-theme-bg: var(--color-pop-sky);
@@ -41,6 +44,7 @@
     --color-primary: var(--color-pop-amber);
     --color-secondary: var(--color-pop-sky);
     --color-accent: var(--color-pop-magenta);
+    --color-success: #34D399; /* emerald-400 para dark mode */
   }
 
   body {
@@ -71,6 +75,7 @@
 
   .nav-bg {
     background-color: var(--color-theme-surface);
-    @apply neo-border neo-shadow;
+    border: 3px solid var(--color-theme-border);
+    box-shadow: 4px 4px 0px 0px var(--color-theme-border);
   }
 }
