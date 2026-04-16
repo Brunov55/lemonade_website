@@ -10,15 +10,18 @@ interface Props {
 
 const { title, subtitle, price, imageSrc } = Astro.props;
 ---
-<button class="btn-venta bg-theme-surface p-3 neo-border neo-shadow flex flex-col items-center gap-3 active:neo-shadow-active transition-all w-full group"
+<button class="btn-venta relative overflow-hidden bg-theme-surface p-3 neo-border neo-shadow flex flex-col items-center gap-3 active:neo-shadow-active transition-all w-full group"
   data-product={`${title} ${subtitle}`}
   data-price={price}
 >
+	<!-- Progress Bar Layer -->
+	<div class="progress-bar absolute bottom-0 left-0 right-0 h-0 bg-accent opacity-30 transition-all ease-linear pointer-events-none z-0"></div>
+
 	<!-- Contenedor cuadrado para las imágenes -->
-	<div class="w-full aspect-square bg-primary border-[3px] border-theme-border flex items-center justify-center overflow-hidden">
+	<div class="w-full aspect-square bg-primary border-[3px] border-theme-border flex items-center justify-center overflow-hidden z-10 pointer-events-none">
 		<Image src={imageSrc} alt={`${title} ${subtitle}`} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none" />
 	</div>
-	<div class="text-center pb-1 w-full pointer-events-none">
+	<div class="text-center pb-1 w-full z-10 pointer-events-none">
 		<p class="font-display font-bold leading-tight text-base text-theme-text uppercase tracking-tight">{title}</p>
 		<p class="text-theme-muted font-bold text-xs mb-1 uppercase">{subtitle}</p>
 		<p class="font-bold text-accent text-xl">${price}</p>

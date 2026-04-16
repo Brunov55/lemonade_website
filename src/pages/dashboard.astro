@@ -197,8 +197,76 @@ if (totalVentas === 0 && ventasHoy.length > 0) {
 	};
 
 	buttons.forEach((btn) => {
-		btn.addEventListener("click", async (e) => {
+		let holdTimeout: ReturnType<typeof setTimeout> | undefined;
+		const HOLD_DURATION = 500; // ms
+		let isHolding = false;
+
+		const startHold = (e: Event) => {
+			if (e.type === 'touchstart') {
+				isHolding = true;
+			} else if (e.type === 'mousedown' && isHolding) {
+				return; // Si ya se manejó por touchstart, ignorar mousedown
+			}
+
 			const btnEl = e.currentTarget as HTMLButtonElement;
+			const progressBar = btnEl.querySelector(".progress-bar") as HTMLElement;
+			
+			if (progressBar) {
+				progressBar.style.transitionDuration = `${HOLD_DURATION}ms`;
+				progressBar.style.height = '100%';
+			}
+
+			if (navigator.vibrate) navigator.vibrate(15); // Feedback táctil inicial
+
+			holdTimeout = setTimeout(() => executeSale(btnEl), HOLD_DURATION);
+		};
+
+		const cancelHold = (e: Event) => {
+			const btnEl = e.currentTarget as HTMLButtonElement;
+			const progressBar = btnEl.querySelector(".progress-bar") as HTMLElement;
+			
+			if (progressBar) {
+				progressBar.style.transitionDuration = '150ms';
+				progressBar.style.height = '0%';
+			}
+
+			if (holdTimeout) {
+				clearTimeout(holdTimeout);
+				holdTimeout = undefined;
+			}
+			
+			if (e.type === 'touchend' || e.type === 'touchcancel') {
+				setTimeout(() => { isHolding = false; }, 300);
+			}
+		};
+
+		// Eventos Touch y Mouse acoplados
+		btn.addEventListener("mousedown", startHold);
+		btn.addEventListener("touchstart", startHold, { passive: true });
+		
+		btn.addEventListener("mouseup", cancelHold);
+		btn.addEventListener("mouseleave", cancelHold);
+		btn.addEventListener("touchend", cancelHold);
+		btn.addEventListener("touchcancel", cancelHold);
+		
+		// Prevenir el menú contextual en móviles al dejar presionado
+		btn.addEventListener("contextmenu", (e) => { 
+			e.preventDefault(); 
+			cancelHold(e); 
+		});
+
+		const executeSale = async (btnEl: HTMLButtonElement) => {
+			// Reiniciar progreso visual instantáneo para el siguiente toque
+			const progressBar = btnEl.querySelector(".progress-bar") as HTMLElement;
+			if (progressBar) {
+				progressBar.style.transitionDuration = '0ms';
+				progressBar.style.height = '0%';
+			}
+			holdTimeout = undefined;
+
+			// Tacto de éxito para confirmar al usuario físicamente
+			if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+
 			const product = btnEl.dataset.product || "Venta";
 			const price = parseFloat(btnEl.dataset.price || "0");
 
@@ -285,6 +353,6 @@ if (totalVentas === 0 && ventasHoy.length > 0) {
 
 				alert(`Venta fallida: ${(error as Error).message}`);
 			}
-		});
+		};
 	});
 </script>
