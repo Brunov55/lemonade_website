@@ -10,10 +10,13 @@ import caracalImg from "../assets/caracal.jpeg";
 const cookieHeader = Astro.request.headers.get("cookie");
 let totalVentas = await salesService.getTodaySalesTotal(cookieHeader);
 
-// Obtener ventas recientes y filtrar rigurosamente "sólo las de hoy" en el frontend
-const ventasRecientes = await salesService.getRecentSales(cookieHeader);
-const hoy = new Date().toDateString();
-const ventasHoy = ventasRecientes.filter((v) => v.date.toDateString() === hoy);
+// Obtener TODAS las ventas recientes (limit alto) y filtrar "sólo las de hoy" en la zona de México
+const ventasRecientes = await salesService.getRecentSales(cookieHeader, 1000);
+const MX_TZ = 'America/Mexico_City';
+const hoy = new Date().toLocaleDateString('es-MX', { timeZone: MX_TZ });
+const ventasHoy = ventasRecientes.filter(
+  (v) => v.date.toLocaleDateString('es-MX', { timeZone: MX_TZ }) === hoy
+);
 
 // Parche de Seguridad: Si por problema de Zonas Horarias el endpoint /today devuelve 0
 // pero la lista de transacciones SÍ tiene ventas de hoy, calculamos el total sumando la lista.
@@ -143,10 +146,11 @@ if (totalVentas === 0 && ventasHoy.length > 0) {
 											<p class="text-xs font-bold text-theme-muted uppercase">
 												Hoy •{" "}
 												{venta.date.toLocaleTimeString(
-													[],
+													'es-MX',
 													{
 														hour: "2-digit",
 														minute: "2-digit",
+														timeZone: "America/Mexico_City"
 													},
 												)}
 											</p>
@@ -294,9 +298,10 @@ if (totalVentas === 0 && ventasHoy.length > 0) {
 			}
 
 			const now = new Date();
-			const timeString = now.toLocaleTimeString([], {
+			const timeString = now.toLocaleTimeString('es-MX', {
 				hour: "2-digit",
 				minute: "2-digit",
+				timeZone: "America/Mexico_City"
 			});
 
 			const newItem = document.createElement("div");

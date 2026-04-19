@@ -149,7 +149,7 @@ const maxMonth = getMax(monthlyData);
 							</div>
 							<div>
 								<p class="font-poppins font-semibold text-sm text-theme-text">{venta.product || venta.productName || 'Venta'}</p>
-								<p class="text-xs text-theme-muted">{venta.date.toLocaleDateString()} • {venta.date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+								<p class="text-xs text-theme-muted">{venta.date.toLocaleDateString('es-MX', { timeZone: 'America/Mexico_City' })} • {venta.date.toLocaleTimeString('es-MX', {hour: '2-digit', minute:'2-digit', timeZone: 'America/Mexico_City'})}</p>
 							</div>
 						</div>
 						<p class="font-bold text-success">+${venta.price.toFixed(2)}</p>

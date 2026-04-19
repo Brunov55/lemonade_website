@@ -185,10 +185,11 @@ const variableOptions = [
 											{gasto.item}
 										</p>
 										<p class="text-xs font-bold text-theme-muted uppercase">
-											{gasto.date.toLocaleDateString()}{" "}
-											{gasto.date.toLocaleTimeString([], {
+											{gasto.date.toLocaleDateString('es-MX', { timeZone: 'America/Mexico_City' })}{" "}
+											{gasto.date.toLocaleTimeString('es-MX', {
 												hour: "2-digit",
 												minute: "2-digit",
+												timeZone: "America/Mexico_City"
 											})}
 										</p>
 									</div>

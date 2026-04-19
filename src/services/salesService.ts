@@ -33,9 +33,9 @@ export const salesService = {
     }
   },
   
-  getRecentSales: async (cookieHeader: string | null): Promise<Sale[]> => {
+  getRecentSales: async (cookieHeader: string | null, limit = 10): Promise<Sale[]> => {
     try {
-      const res = await fetch(`${import.meta.env.API_URL}/sales/recent`, {
+      const res = await fetch(`${import.meta.env.API_URL}/sales/recent?limit=${limit}`, {
         headers: cookieHeader ? { 'cookie': cookieHeader } : {}
       });
       if (!res.ok) return [];
