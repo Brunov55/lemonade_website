@@ -45,6 +45,14 @@ if (totalVentas === 0 && ventasHoy.length > 0) {
 	</header>
 
 	<main class="flex-1 px-4 py-8 pb-24">
+		<!-- PRUEBA DE ZONA HORARIA -->
+		<div class="mb-6 bg-theme-surface p-4 neo-border neo-shadow text-center">
+			<p class="text-xs font-bold text-theme-muted mb-2 uppercase">Hora Servidor (SSR): <span class="text-accent">{new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' })}</span></p>
+			<button id="test-time-btn" class="w-full bg-theme-border text-theme-surface font-display font-bold uppercase tracking-widest text-sm py-2 neo-border active:translate-y-1 transition-transform">
+				Probar Hora Cliente
+			</button>
+		</div>
+
 		<h2
 			class="text-xl font-display uppercase tracking-tight font-bold mb-4 px-2 text-theme-text"
 		>
@@ -183,10 +191,85 @@ if (totalVentas === 0 && ventasHoy.length > 0) {
 
 	const totalMontoEl = document.getElementById("total-monto");
 	const headerTextEl = document.getElementById("total-ventas-display");
-	const buttons = document.querySelectorAll(".btn-venta");
-
 	const ventasListEl = document.getElementById("ventas-list");
 	const countEl = document.getElementById("ventas-count");
+	const buttons = document.querySelectorAll(".btn-venta");
+
+	// Prisma de prueba de hora y UI Optimista
+	const testTimeBtn = document.getElementById("test-time-btn");
+	if (testTimeBtn) {
+		testTimeBtn.addEventListener("click", () => {
+			const browserTime = new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' });
+			const rawTime = new Date().toLocaleString(); // Browser's actual local time
+			
+			// 1. Mostrar transacción visual
+			const emptyState = document.getElementById("empty-state");
+			if (emptyState) emptyState.remove();
+
+			if (countEl) {
+				const currentCount = parseInt(countEl.innerText.split(" ")[0]);
+				countEl.innerText = `${currentCount + 1} items`;
+			}
+
+			const now = new Date();
+			const timeString = now.toLocaleTimeString('es-MX', {
+				hour: "2-digit",
+				minute: "2-digit",
+				timeZone: "America/Mexico_City"
+			});
+
+			const newItem = document.createElement("div");
+			newItem.className =
+				"bg-theme-surface p-4 neo-border neo-shadow flex justify-between items-center transition-all opacity-0 -translate-y-4 border-theme-border";
+			newItem.innerHTML = `
+				<div class="flex items-center gap-3">
+					<div class="w-10 h-10 border-[3px] border-theme-border flex items-center justify-center font-bold bg-primary text-theme-border">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"></path>
+						</svg>
+					</div>
+					<div>
+						<p class="font-display font-bold text-sm text-accent">PRUEBA DE HORA</p>
+						<p class="text-xs font-bold text-theme-muted uppercase">Hoy • ${timeString}</p>
+					</div>
+				</div>
+				<div class="flex items-center gap-3">
+					<p class="font-bold text-accent">+$0.00</p>
+					<button class="delete-dummy-btn text-red-500 bg-red-100 border-2 border-red-500 p-1 neo-shadow active:translate-y-1 transition-all">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+						</svg>
+					</button>
+				</div>
+			`;
+
+			const deleteBtn = newItem.querySelector('.delete-dummy-btn');
+			if (deleteBtn) {
+				deleteBtn.addEventListener('click', () => {
+					// Animación de salida antes de remover
+					newItem.classList.remove("opacity-100", "translate-y-0");
+					newItem.classList.add("opacity-0", "-translate-y-4");
+					setTimeout(() => {
+						newItem.remove();
+						if (countEl) {
+							const currentCount = parseInt(countEl.innerText.split(" ")[0]);
+							countEl.innerText = `${Math.max(0, currentCount - 1)} items`;
+						}
+					}, 300); // 300ms debe coincidir con la duración de 'transition-all'
+				});
+			}
+
+			if (ventasListEl) {
+				ventasListEl.prepend(newItem);
+				requestAnimationFrame(() => {
+					newItem.classList.remove("opacity-0", "-translate-y-4");
+					newItem.classList.add("opacity-100", "translate-y-0");
+				});
+			}
+
+			alert(`Se generó una venta de prueba visual.\n\nHora calculada (MX): ${browserTime}\nHora interna del dispositivo: ${rawTime}`);
+		});
+	}
 
 	// SVG Paths for optimistic UI
 	const getIconPath = (product: string) => {
