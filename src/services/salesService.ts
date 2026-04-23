@@ -46,6 +46,19 @@ export const salesService = {
     }
   },
 
+  getTodaySalesList: async (cookieHeader: string | null): Promise<Sale[]> => {
+    try {
+      const res = await fetch(`${import.meta.env.API_URL}/sales/recent/today`, {
+        headers: cookieHeader ? { 'cookie': cookieHeader } : {}
+      });
+      if (!res.ok) return [];
+      const data = await res.json();
+      return data.map((s: any) => ({ ...s, date: new Date(s.date || s.created_at || s.createdAt) }));
+    } catch(e) {
+      return [];
+    }
+  },
+
   getTodayData: async (cookieHeader: string | null) => {
     try {
       const res = await fetch(`${import.meta.env.API_URL}/sales/stats?period=hoy`, {

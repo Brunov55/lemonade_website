@@ -10,16 +10,9 @@ import caracalImg from "../assets/caracal.jpeg";
 const cookieHeader = Astro.request.headers.get("cookie");
 let totalVentas = await salesService.getTodaySalesTotal(cookieHeader);
 
-// Optimización: Límite reducido drásticamente de 1000 a 30 para no saturar el backend (Railway)
-const ventasRecientes = await salesService.getRecentSales(cookieHeader, 30);
-const MX_TZ = 'America/Mexico_City';
-const hoy = new Date().toLocaleDateString('es-MX', { timeZone: MX_TZ });
-const ventasHoy = ventasRecientes.filter(
-  (v) => v.date.toLocaleDateString('es-MX', { timeZone: MX_TZ }) === hoy
-);
-
-// Parche de Seguridad: Si por problema de Zonas Horarias el endpoint /today devuelve 0
-// pero la lista de transacciones SÍ tiene ventas de hoy, calculamos el total sumando la lista.
+// Optimización BDD: Llamado directo al endpoint de PostgreSQL que ya hace el filtrado de zona horaria
+const ventasHoy = await salesService.getTodaySalesList(cookieHeader);
+const ultimasVentas = ventasHoy.slice(0, 30);
 if (totalVentas === 0 && ventasHoy.length > 0) {
 	totalVentas = ventasHoy.reduce((acc, venta) => acc + (venta.price || 0), 0);
 }
@@ -95,14 +88,14 @@ if (totalVentas === 0 && ventasHoy.length > 0) {
 				</h2>
 				<span
 					class="text-xs font-bold text-theme-surface bg-theme-border px-2 py-1 border-2 border-theme-border shadow-[2px_2px_0px_0px_var(--color-theme-border)]"
-					id="ventas-count">{ventasHoy.length} items</span
+					id="ventas-count">{ultimasVentas.length} items</span
 				>
 			</div>
 
 			<div class="flex flex-col gap-3" id="ventas-list">
 				{
-					ventasHoy.length > 0 ? (
-						ventasHoy.map((venta: any) => {
+					ultimasVentas.length > 0 ? (
+						ultimasVentas.map((venta: any) => {
 							const isMineral = (
 								venta.product ||
 								venta.productName ||
