@@ -10,8 +10,8 @@ import caracalImg from "../assets/caracal.jpeg";
 const cookieHeader = Astro.request.headers.get("cookie");
 let totalVentas = await salesService.getTodaySalesTotal(cookieHeader);
 
-// Obtener TODAS las ventas recientes (limit alto) y filtrar "sólo las de hoy" en la zona de México
-const ventasRecientes = await salesService.getRecentSales(cookieHeader, 1000);
+// Optimización: Límite reducido drásticamente de 1000 a 30 para no saturar el backend (Railway)
+const ventasRecientes = await salesService.getRecentSales(cookieHeader, 30);
 const MX_TZ = 'America/Mexico_City';
 const hoy = new Date().toLocaleDateString('es-MX', { timeZone: MX_TZ });
 const ventasHoy = ventasRecientes.filter(
