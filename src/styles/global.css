@@ -86,3 +86,35 @@
     box-shadow: 4px 4px 0px 0px var(--color-theme-border);
   }
 }
+@theme {
+  --color-pop-pink: #ffb6c1;
+  --color-pop-blue: #ade8f4;
+  --color-pop-yellow: #fad2e1;
+  --color-pop-green: #d8f3dc;
+  
+  --tint-natural: #FBDCEB;
+  --tint-mineral: #D3FAFA;
+  --tint-te-negro: #FDE8D0;
+  --tint-te-frutos: #F8D8DC;
+  --tint-clasica: #E3FBD3;
+}
+
+@layer base {
+  :root {
+    --color-pop-pink: #ffb6c1;
+    --color-pop-blue: #ade8f4;
+    --color-pop-yellow: #fad2e1;
+    --color-pop-green: #d8f3dc;
+    
+    --tint-natural: #FEE7F2;
+    --tint-mineral: #E3FDFD;
+    --tint-te-negro: #FCEFD5;
+    --tint-te-frutos: #FCE8EA;
+    --tint-clasica: #EEFCE1;
+  }
+}
+
+.pulse-money {
+  transform: scale(1.15);
+  color: var(--color-pop-pink) !important;
+}

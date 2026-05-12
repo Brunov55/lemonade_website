@@ -9,6 +9,10 @@ import caracalImg from "../assets/caracal.jpeg";
 // REGLA #3: Carga Inicial SSR (Pidiendo ventas desde el servidor inyectando la cookie)
 const cookieHeader = Astro.request.headers.get("cookie");
 let totalVentas = await salesService.getTodaySalesTotal(cookieHeader);
+const berriesIconHtml = `<img src="/berries-lemonade.svg" alt="Limonada de frutos rojos" style="width: 100%; height: 100%; object-fit: contain; display: block;" />`;
+const classicIconHtml = `<img src="/lemonade.svg" alt="Limonada clásica" style="width: 100%; height: 100%; object-fit: contain; display: block;" />`;
+const blackTeaIconHtml = `<img src="/black-tea-lemonade.svg" alt="Té negro con limonada" style="width: 100%; height: 100%; object-fit: contain; display: block;" />`;
+const berriesBlackTeaIconHtml = `<img src="/berries-black-tea.svg" alt="Té de frutos rojos" style="width: 100%; height: 100%; object-fit: contain; display: block;" />`;
 
 // Optimización BDD: Llamado directo al endpoint de PostgreSQL que ya hace el filtrado de zona horaria
 const ventasHoy = await salesService.getTodaySalesList(cookieHeader);
@@ -46,38 +50,44 @@ if (totalVentas === 0 && ventasHoy.length > 0) {
 			</button>
 		</div>
 
-		<h2
-			class="text-xl font-display uppercase tracking-tight font-bold mb-4 px-2 text-theme-text"
-		>
-			Venta Rápida
-		</h2>
+		<!-- Category: Limonadas Naturales -->
+		<section class="mb-8">
+			<h2 class="text-xl font-display uppercase tracking-tight font-bold mb-4 px-2 text-theme-text flex items-center gap-2">
+				🍋 Limonadas Naturales
+			</h2>
+			<div class="grid grid-cols-2 gap-4">
+				<ProductButton title="Frutos Rojos" subtitle="500ml" price={25} variant="natural" iconSvg={berriesIconHtml} />
+				<ProductButton title="Frutos Rojos" subtitle="1 Litro" price={45} variant="natural" iconSvg={berriesIconHtml} />
+				<ProductButton title="Clásica" subtitle="500ml" price={18} variant="clasica" iconSvg={classicIconHtml} />
+				<ProductButton title="Clásica" subtitle="1 Litro" price={33} variant="clasica" iconSvg={classicIconHtml} />
+			</div>
+		</section>
 
-		<div class="grid grid-cols-2 gap-4 mb-8">
-			<ProductButton
-				title="Natural"
-				subtitle="500ml"
-				price={25}
-				imageSrc={caracalImg}
-			/>
-			<ProductButton
-				title="Mineral"
-				subtitle="500ml"
-				price={35}
-				imageSrc={caracalImg}
-			/>
-			<ProductButton
-				title="Natural"
-				subtitle="1 Litro"
-				price={45}
-				imageSrc={caracalImg}
-			/>
-			<ProductButton
-				title="Mineral"
-				subtitle="1 Litro"
-				price={65}
-				imageSrc={caracalImg}
-			/>
-		</div>
+		<!-- Category: Limonadas Minerales -->
+		<section class="mb-8">
+			<h2 class="text-xl font-display uppercase tracking-tight font-bold mb-4 px-2 text-theme-text flex items-center gap-2">
+				🫧 Limonadas Minerales
+			</h2>
+			<div class="grid grid-cols-2 gap-4">
+				<ProductButton title="Frutos Rojos" subtitle="500ml" price={35} variant="mineral" iconSvg={berriesIconHtml} />
+				<ProductButton title="Frutos Rojos" subtitle="1 Litro" price={65} variant="mineral" iconSvg={berriesIconHtml} />
+				<ProductButton title="Clásica" subtitle="500ml" price={28} variant="mineral" iconSvg={classicIconHtml} />
+				<ProductButton title="Clásica" subtitle="1 Litro" price={52} variant="mineral" iconSvg={classicIconHtml} />
+			</div>
+		</section>
+
+		<!-- Category: Infusiones Botánicas -->
+		<section class="mb-8">
+			<h2 class="text-xl font-display uppercase tracking-tight font-bold mb-4 px-2 text-theme-text flex items-center gap-2">
+				🌿 Infusiones Botánicas
+			</h2>
+			<div class="grid grid-cols-2 gap-4">
+				<ProductButton title="Té Negro" subtitle="con Limonada (500ml)" price={20} variant="te-negro" iconSvg={blackTeaIconHtml} />
+				<ProductButton title="Té Negro" subtitle="con Limonada (1L)" price={35} variant="te-negro" iconSvg={blackTeaIconHtml} />
+				<ProductButton title="Té Frutos" subtitle="Rojos (500ml)" price={30} variant="te-frutos" iconSvg={berriesBlackTeaIconHtml} />
+				<ProductButton title="Té Frutos" subtitle="Rojos (1L)" price={55} variant="te-frutos" iconSvg={berriesBlackTeaIconHtml} />
+			</div>
+		</section>
 
 		<section>
 			<div class="flex justify-between items-center mb-4 px-2">

@@ -1,29 +1,150 @@
 ---
-import { Image } from 'astro:assets';
-
 interface Props {
 	title: string;
 	subtitle: string;
 	price: number;
-	imageSrc: any;
+	variant: "natural" | "mineral" | "te-negro" | "te-frutos" | "clasica";
+	iconSvg?: string;
 }
 
-const { title, subtitle, price, imageSrc } = Astro.props;
----
-<button class="btn-venta relative overflow-hidden bg-theme-surface p-3 neo-border neo-shadow flex flex-col items-center gap-3 active:neo-shadow-active transition-all w-full group"
-  data-product={`${title} ${subtitle}`}
-  data-price={price}
->
-	<!-- Progress Bar Layer -->
-	<div class="progress-bar absolute bottom-0 left-0 right-0 h-0 bg-accent opacity-30 transition-all ease-linear pointer-events-none z-0"></div>
+const { title, subtitle, price, variant = "natural", iconSvg } = Astro.props;
+const iconAreaPadding = iconSvg ? "0" : "16px 12px";
+const iconAreaMinHeight = iconSvg ? "140px" : "120px";
+const iconBoxStyle = iconSvg
+	? "width: 100%; height: 140px; display: flex; align-items: center; justify-content: center;"
+	: "width: 90px; height: 90px;";
 
-	<!-- Contenedor cuadrado para las imágenes -->
-	<div class="w-full aspect-square bg-primary border-[3px] border-theme-border flex items-center justify-center overflow-hidden z-10 pointer-events-none">
-		<Image src={imageSrc} alt={`${title} ${subtitle}`} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none" />
+type VariantConfig = { tintVar: string; iconColor: string; icon: string };
+
+const variants: Record<string, VariantConfig> = {
+	natural: {
+		tintVar: "var(--tint-natural)",
+		iconColor: "var(--color-theme-text)",
+		icon: `
+			<!-- Berry clusters -->
+			<circle cx="10.5" cy="15.5" r="1.5" stroke-width="1.2" fill="none"/>
+			<circle cx="12.5" cy="13.8" r="1.5" stroke-width="1.2" fill="none"/>
+			<circle cx="14.5" cy="15.8" r="1.5" stroke-width="1.2" fill="none"/>
+			<path d="M12.5 13.8 C13 11 11 9 11 9" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+			<path d="M11 9 C9 8.5 7 10.5 7 10.5" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+			<path d="M11 9 C13 8.5 15 10.5 15 10.5" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+		`,
+	},
+	mineral: {
+		tintVar: "var(--tint-mineral)",
+		iconColor: "var(--color-theme-text)",
+		icon: `
+			<!-- Bubbles and berry -->
+			<circle cx="12" cy="16" r="2.5" stroke-width="1.2" fill="none"/>
+			<circle cx="9" cy="10" r="1" stroke-width="1" fill="none"/>
+			<circle cx="13" cy="7" r="1.5" stroke-width="1.2" fill="none"/>
+			<circle cx="15" cy="11" r="0.8" stroke-width="1" fill="none"/>
+			<circle cx="10" cy="5" r="1" stroke-width="1" fill="none"/>
+		`,
+	},
+	"te-negro": {
+		tintVar: "var(--tint-te-negro)",
+		iconColor: "var(--color-theme-text)",
+		icon: `
+			<!-- Teacup with steam -->
+			<ellipse cx="12" cy="17" rx="6" ry="1.5" stroke-width="1.5" fill="none"/>
+			<path d="M7 12v2a5 5 0 0010 0v-2H7z" stroke-width="1.6" fill="none"/>
+			<path d="M17 13.5 C20 13.5 20 16.5 17 16.5" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+			<path d="M10 9 C10 7 11 6 11 4" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+			<path d="M14 9 C14 7 13 6 13 4" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+		`,
+	},
+	"te-frutos": {
+		tintVar: "var(--tint-te-frutos)",
+		iconColor: "var(--color-theme-text)",
+		icon: `
+			<!-- Teacup with berries -->
+			<ellipse cx="12" cy="18" rx="6" ry="1.5" stroke-width="1.5" fill="none"/>
+			<path d="M7 13v3a5 5 0 0010 0v-3H7z" stroke-width="1.6" fill="none"/>
+			<circle cx="10" cy="11" r="1" stroke-width="1" fill="none"/>
+			<circle cx="12" cy="10" r="1.2" stroke-width="1" fill="none"/>
+			<circle cx="14" cy="11.5" r="0.9" stroke-width="1" fill="none"/>
+		`,
+	},
+	clasica: {
+		tintVar: "var(--tint-clasica)",
+		iconColor: "var(--color-theme-text)",
+		icon: `
+			<!-- Lemon cut in half -->
+			<circle cx="12" cy="13" r="7" stroke-width="1.6" fill="none"/>
+			<circle cx="12" cy="13" r="5" stroke-width="0.9" fill="none" stroke-dasharray="0.5 1.5"/>
+			<line x1="12" y1="8" x2="12" y2="18" stroke-width="1.1" stroke-linecap="round"/>
+			<path d="M7.2 10.5 C9 11 9.5 12 12 12.5" stroke-width="1" stroke-linecap="round"/>
+			<path d="M16.8 10.5 C15 11 14.5 12 12 12.5" stroke-width="1" stroke-linecap="round"/>
+			<path d="M7.2 15.5 C9 15 9.5 14 12 13.5" stroke-width="1" stroke-linecap="round"/>
+			<path d="M16.8 15.5 C15 15 14.5 14 12 13.5" stroke-width="1" stroke-linecap="round"/>
+			<!-- stem -->
+			<path d="M12 6 C12 5 13 4.5 12.5 3.5" stroke-width="1.3" stroke-linecap="round" fill="none"/>
+		`,
+	},
+};
+
+const cfg = variants[variant] ?? variants.natural;
+---
+
+<button
+	class="btn-venta relative overflow-hidden w-full flex flex-col items-center transition-all duration-75 active:translate-y-1 active:shadow-none select-none"
+	data-product={`${title} ${subtitle}`}
+	data-price={price}
+	style={`background: var(--color-theme-surface); border-radius: 8px; border: 3px solid var(--color-theme-border); box-shadow: 4px 4px 0px var(--color-theme-border);`}
+>
+	<!-- Progress bar (hold gesture) -->
+	<div
+		class="progress-bar absolute bottom-0 left-0 right-0 h-0 transition-all ease-linear pointer-events-none z-0"
+		style="border-radius: 0 0 4px 4px; background: var(--color-primary); opacity: 0.8;"
+	>
 	</div>
-	<div class="text-center pb-1 w-full z-10 pointer-events-none">
-		<p class="font-display font-bold leading-tight text-base text-theme-text uppercase tracking-tight">{title}</p>
-		<p class="text-theme-muted font-bold text-xs mb-1 uppercase">{subtitle}</p>
-		<p class="font-bold text-accent text-xl">${price}</p>
+
+	<!-- Icon area with category tint -->
+	<div
+		class="w-full flex items-center justify-center pointer-events-none z-10"
+		style={`background: ${cfg.tintVar}; border-radius: 4px 4px 0 0; padding: ${iconAreaPadding}; min-height: ${iconAreaMinHeight}; border-bottom: 3px solid var(--color-theme-border);`}
+	>
+		{iconSvg ? (
+			<div style={iconBoxStyle} set:html={iconSvg} />
+		) : (
+			<svg
+				viewBox="0 0 24 24"
+				xmlns="http://www.w3.org/2000/svg"
+				stroke="currentColor"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				fill="none"
+				style={`width: 56px; height: 56px; color: ${cfg.iconColor};`}
+				set:html={cfg.icon}
+			/>
+		)}
+	</div>
+
+	<!-- Text area -->
+	<div
+		class="w-full flex flex-col items-center pointer-events-none z-10 bg-theme-surface"
+		style="padding: 14px 8px 18px;"
+	>
+		<p
+			class="font-display font-bold leading-tight text-center"
+			style="font-size: 17px; color: var(--color-theme-text); margin-bottom: 4px;"
+		>
+			{title}
+		</p>
+		<p
+			style="font-size: 12px; color: var(--color-theme-muted); font-weight: 600; margin-bottom: 8px;"
+		>
+			{subtitle}
+		</p>
+		<span
+			class="font-display font-bold"
+			style={`color: var(--color-theme-text); font-size: 20px;`}
+		>
+			<span
+				style="font-family: var(--font-body); font-size: 14px; font-weight: 700; opacity: 0.9;"
+				>$</span
+			>{price}
+		</span>
 	</div>
 </button>

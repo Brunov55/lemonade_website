@@ -2,7 +2,7 @@
 // El "Envoltorio" Global para el cliente Vanilla JS (Browser)
 
 export const apiClient = async (endpoint: string, options: RequestInit = {}) => {
-  const url = `${import.meta.env.PUBLIC_API_URL}${endpoint}`;
+  const url = `${import.meta.env.PUBLIC_API_URL || '/api/v1'}${endpoint}`;
   
   let response: Response;
   try {

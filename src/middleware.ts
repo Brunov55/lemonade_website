@@ -3,7 +3,7 @@ import { defineMiddleware } from 'astro:middleware';
 // REGLA #2: El Guardián de Rutas (Middleware SSR)
 export const onRequest = defineMiddleware(async ({ url, request, redirect }, next) => {
   // Ignorar assets estáticos, llamadas API internas y rutas públicas
-  const isStatic = url.pathname.startsWith('/_') || url.pathname.startsWith('/api') || url.pathname.includes('.') || url.pathname === '/';
+  const isStatic = url.pathname.startsWith('/_') || url.pathname.startsWith('/api') || url.pathname.includes('.') || url.pathname === '/' || url.pathname === '/preview';
   if (isStatic) {
     // Redirigir al dashboard si un usuario ya autenticado entra a /
     if (url.pathname === '/') {
@@ -24,23 +24,23 @@ export const onRequest = defineMiddleware(async ({ url, request, redirect }, nex
 
   try {
     // Hacemos GET a Spring Boot para validar el JWT
-    const meUrl = `${import.meta.env.API_URL}/auth/me`;
+    const meUrl = `${import.meta.env.API_URL || 'http://localhost:8080/api/v1'}/auth/me`;
     console.log(`[Middleware] Validating auth going to: ${meUrl}`);
     console.log(`[Middleware] Passing cookie header: ${cookieHeader}`);
-    
+
     const response = await fetch(meUrl, {
       headers: {
         'cookie': cookieHeader // Inyectamos la cookie tal cual vino del navegador del cliente
       }
     });
-    
+
     // Si el backend dice 401 Unauthorized, regresamos al login (/)
     if (!response.ok) {
       console.log(`[Middleware] Validate returned ${response.status}. Redirecting to /`);
       return redirect('/');
     }
     console.log(`[Middleware] Validate returned ${response.status}. Welcome!`);
-    
+
     // Si dice 200 OK, lo dejamos pasar
   } catch (e: any) {
     // Manejo de backend caído (Timeout)
@@ -48,6 +48,6 @@ export const onRequest = defineMiddleware(async ({ url, request, redirect }, nex
     // Podrías mostrar una pantalla de error 500, pero por seguridad y flujo, rebotar a login (/)
     return redirect('/');
   }
-  
+
   return next();
 });
